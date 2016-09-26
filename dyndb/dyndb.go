@@ -1,18 +1,45 @@
-package dynamodb
+package dyndb
 
 import (
 	"strconv"
 	"strings"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
-// FlattenDynamoDBResponse function recursively loops through response from dynamodb output
+func QueryDBKeyID(region string, tableName string, keyID string, query string) (*dynamodb.QueryOutput, error) {
+
+	svc := dynamodb.New(session.New(&aws.Config{Region: aws.String(region)}))
+
+	var queryInput = &dynamodb.QueryInput{
+		TableName: aws.String(tableName),
+		KeyConditions: map[string]*dynamodb.Condition{
+			keyID: {
+				ComparisonOperator: aws.String("EQ"),
+				AttributeValueList: []*dynamodb.AttributeValue{
+					{
+						S: aws.String(query),
+					},
+				},
+			},
+		},
+	}
+
+	var resp, err = svc.Query(queryInput)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// FlattenDBResponse function recursively loops through response from dynamodb output
 // and flattens it to map with string as key and interface as value, for each parameter in output
 // function is going through all provided types and discards all except one that is not nil
 // and it formats it to matching type: string, integer, float or boolean
 // if parameter does not match to one of these types all are returned
-func FlattenDynamoDBResponse(resp *dynamodb.QueryOutput) (map[string]interface{}, error) {
+func FlattenDBResponse(resp *dynamodb.QueryOutput) (map[string]interface{}, error) {
 	var v = make(map[string]interface{})
 	// loop through series of versions of results
 	for _, item := range resp.Items {
