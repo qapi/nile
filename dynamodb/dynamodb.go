@@ -7,7 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
-// FlattenDynamoDBResponse function recrusevly loops through response from dynamodb output
+// FlattenDynamoDBResponse function recursively loops through response from dynamodb output
 // and flattens it to map with string as key and interface as value, for each parameter in output
 // function is going through all provided types and discards all except one that is not nil
 // and it formats it to matching type: string, integer, float or boolean
