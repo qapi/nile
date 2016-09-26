@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
+// QueryDBKeyID function abstracts query process of AWS DynamoDB with key ID
 func QueryDBKeyID(region string, tableName string, keyID string, query string) (*dynamodb.QueryOutput, error) {
 
 	svc := dynamodb.New(session.New(&aws.Config{Region: aws.String(region)}))
