@@ -9,30 +9,36 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
-// QueryDBKeyID function abstracts query process of AWS DynamoDB with key ID
-func QueryDBKeyID(region string, tableName string, keyID string, query string) (*dynamodb.QueryOutput, error) {
+func getSession(region string) *dynamodb.DynamoDB {
+	return dynamodb.New(session.New(&aws.Config{Region: aws.String(region)}))
+}
 
-	svc := dynamodb.New(session.New(&aws.Config{Region: aws.String(region)}))
+// QueryDB function abstracts query process of AWS DynamoDB
+func QueryDB(region string, tableName string, appID string, keyName string, keyValue string) (*dynamodb.QueryOutput, error) {
+	svc := getSession(region)
 
 	var queryInput = &dynamodb.QueryInput{
-		TableName: aws.String(tableName),
-		KeyConditions: map[string]*dynamodb.Condition{
-			keyID: {
-				ComparisonOperator: aws.String("EQ"),
-				AttributeValueList: []*dynamodb.AttributeValue{
-					{
-						S: aws.String(query),
-					},
-				},
+		TableName:              aws.String(tableName),
+		KeyConditionExpression: aws.String("AppID = :appID AND #" + keyName + " = :" + keyName),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":appID": &dynamodb.AttributeValue{
+				S: aws.String(appID),
 			},
+			":" + keyName: &dynamodb.AttributeValue{
+				S: aws.String(keyValue),
+			},
+		},
+		ExpressionAttributeNames: map[string]*string{
+			"#" + keyName: aws.String(keyName),
 		},
 	}
 
-	var resp, err = svc.Query(queryInput)
+	dbresp, err := svc.Query(queryInput)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+
+	return dbresp, nil
 }
 
 // FlattenDBResponse function recursively loops through response from dynamodb output
