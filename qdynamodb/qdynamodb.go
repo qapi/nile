@@ -1,4 +1,4 @@
-package dyndb
+package qdynamodb
 
 import (
 	"strconv"
