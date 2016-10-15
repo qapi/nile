@@ -41,6 +41,31 @@ func QueryDB(region string, tableName string, appID string, keyName string, keyV
 	return dbresp, nil
 }
 
+// QueryDBIndex function abstracts query process of AWS DynamoDB using just index Partition Key
+func QueryDBIndex(region string, tableName string, keyName string, keyValue string) (*dynamodb.QueryOutput, error) {
+	svc := getSession(region)
+
+	var queryInput = &dynamodb.QueryInput{
+		TableName:              aws.String(tableName),
+		KeyConditionExpression: aws.String("#" + keyName + " = :" + keyName),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":" + keyName: &dynamodb.AttributeValue{
+				S: aws.String(keyValue),
+			},
+		},
+		ExpressionAttributeNames: map[string]*string{
+			"#" + keyName: aws.String(keyName),
+		},
+	}
+
+	dbresp, err := svc.Query(queryInput)
+	if err != nil {
+		return nil, err
+	}
+
+	return dbresp, nil
+}
+
 // FlattenDBResponse function recursively loops through response from dynamodb output
 // and flattens it to map with string as key and interface as value, for each parameter in output
 // function is going through all provided types and discards all except one that is not nil
