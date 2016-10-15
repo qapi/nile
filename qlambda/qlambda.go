@@ -3,8 +3,6 @@ package qlambda
 import (
 	"errors"
 	"net/http"
-
-	"github.com/vsrc/nile/qlambda"
 )
 
 // KOResponse prepares response when error happens accepts error, returns body
@@ -53,7 +51,7 @@ func IfEventParamOK(event map[string]interface{}, paramName string, paramLabel s
 	// check if parameter empty or malformed
 	param, paramOK := event[paramName].(map[string]interface{})
 	if !paramOK {
-		return qlambda.KOResponse("Malformed " + paramLabel)
+		return map[string]interface{}{}, errors.New("Malformed " + paramLabel)
 	}
 
 	return param, nil
