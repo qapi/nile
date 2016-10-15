@@ -42,11 +42,12 @@ func QueryDB(region string, tableName string, appID string, keyName string, keyV
 }
 
 // QueryDBIndex function abstracts query process of AWS DynamoDB using just index Partition Key
-func QueryDBIndex(region string, tableName string, keyName string, keyValue string) (*dynamodb.QueryOutput, error) {
+func QueryDBIndex(region string, tableName string, indexName string, keyName string, keyValue string) (*dynamodb.QueryOutput, error) {
 	svc := getSession(region)
 
 	var queryInput = &dynamodb.QueryInput{
 		TableName:              aws.String(tableName),
+		IndexName:              aws.String(indexName),
 		KeyConditionExpression: aws.String("#" + keyName + " = :" + keyName),
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":" + keyName: &dynamodb.AttributeValue{
