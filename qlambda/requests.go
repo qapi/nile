@@ -27,7 +27,8 @@ func GetReqHeaders(event map[string]interface{}, headers ...string) (map[string]
 }
 
 func GetReqBodyParam(event map[string]interface{}, params ...string) (map[string]interface{}, error) {
-	var resp, reqbody map[string]interface{}
+	resp := make(map[string]interface{})
+	reqbody := make(map[string]interface{})
 
 	bodystr, ok := event["body"].(string)
 	if !ok {
@@ -50,7 +51,7 @@ func GetReqBodyParam(event map[string]interface{}, params ...string) (map[string
 }
 
 func GetReqIdentityParam(event map[string]interface{}, params ...string) (map[string]interface{}, error) {
-	var resp map[string]interface{}
+	resp := make(map[string]interface{})
 
 	reqctx, err := IfEventParamOK(event, "requestContext", "Request Context")
 	if err != nil {
