@@ -7,7 +7,7 @@ import (
 
 func GetReqHeaders(event map[string]interface{}, headers ...string) (map[string]interface{}, error) {
 
-	var resp map[string]interface{}
+	resp := make(map[string]interface{})
 
 	reqheaders, err := IfEventParamOK(event, "headers", "Request Headers")
 	if err != nil {
