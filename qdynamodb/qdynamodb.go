@@ -68,14 +68,17 @@ func QueryDBIndex(region string, tableName string, indexName string, keyName str
 }
 
 // FlattenDBResponse function recursively loops through response from dynamodb output
-// and flattens it to map with string as key and interface as value, for each parameter in output
-// function is going through all provided types and discards all except one that is not nil
-// and it formats it to matching type: string, integer, float or boolean
-// if parameter does not match to one of these types all are returned
-func FlattenDBResponse(resp *dynamodb.QueryOutput) (map[string]interface{}, error) {
-	var v = make(map[string]interface{})
+// and flattens it to array of maps with string as key and interface as value, for
+// each parameter in output function is going through all provided types and discards
+// all except one that is not nil and it formats it to matching type: string, integer,
+// float or boolean if parameter does not match to one of these types all are returned
+func FlattenDBResponse(resp *dynamodb.QueryOutput) ([]map[string]interface{}, error) {
+	var v []map[string]interface{}
 	// loop through series of versions of results
 	for _, item := range resp.Items {
+
+		// make map for each item in items
+		var imap = make(map[string]interface{})
 		// loop through array of parameters
 		for paramKey, paramVal := range item {
 			// flatten parameter value
@@ -83,8 +86,10 @@ func FlattenDBResponse(resp *dynamodb.QueryOutput) (map[string]interface{}, erro
 			if err != nil {
 				return nil, err
 			}
-			v[paramKey] = val
+			imap[paramKey] = val
 		}
+		v = append(v, imap)
+
 	}
 
 	return v, nil
