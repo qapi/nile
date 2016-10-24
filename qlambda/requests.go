@@ -3,8 +3,6 @@ package qlambda
 import (
 	"encoding/json"
 	"errors"
-
-	"github.com/vsrc/nile/qlambda"
 )
 
 func GetReqHeaders(event map[string]interface{}, headers ...string) (map[string]interface{}, error) {
@@ -54,11 +52,11 @@ func GetReqBodyParam(event map[string]interface{}, params ...string) (map[string
 func GetReqIdentityParam(event map[string]interface{}, params ...string) (map[string]interface{}, error) {
 	var resp map[string]interface{}
 
-	reqctx, err := qlambda.IfEventParamOK(event, "requestContext", "Request Context")
+	reqctx, err := IfEventParamOK(event, "requestContext", "Request Context")
 	if err != nil {
 		return resp, err
 	}
-	reqid, err := qlambda.IfEventParamOK(reqctx, "identity", "Request Identity")
+	reqid, err := IfEventParamOK(reqctx, "identity", "Request Identity")
 	if err != nil {
 		return resp, err
 	}
