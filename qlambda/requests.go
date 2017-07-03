@@ -5,12 +5,15 @@ import (
 	"errors"
 )
 
+// GetReqHeaders function returns map containing specific headers from lambda
+// response and nil/error as second parameter
 func GetReqHeaders(event map[string]interface{}, headers ...string) (map[string]interface{}, error) {
 
 	resp := make(map[string]interface{})
 
 	reqheaders, err := IfEventParamOK(event, "headers", "Request Headers")
 	if err != nil {
+		// TODO: check if this needs to return error
 		return resp, nil
 	}
 
@@ -26,13 +29,15 @@ func GetReqHeaders(event map[string]interface{}, headers ...string) (map[string]
 
 }
 
+// GetReqBodyParam returns map with specific parameters from body of lambda
+// response and nil/error as second parameter
 func GetReqBodyParam(event map[string]interface{}, params ...string) (map[string]interface{}, error) {
 	resp := make(map[string]interface{})
 	reqbody := make(map[string]interface{})
 
 	bodystr, ok := event["body"].(string)
 	if !ok {
-		return resp, errors.New("Invalid request! Body is missing.")
+		return resp, errors.New("invalid request, body is missing")
 	}
 	if err := json.Unmarshal([]byte(bodystr), &reqbody); err != nil {
 		return resp, err
@@ -50,6 +55,8 @@ func GetReqBodyParam(event map[string]interface{}, params ...string) (map[string
 
 }
 
+// GetReqIdentityParam function that gets identity parameter from lambda response
+// returns map and nil/error
 func GetReqIdentityParam(event map[string]interface{}, params ...string) (map[string]interface{}, error) {
 	resp := make(map[string]interface{})
 
@@ -74,6 +81,8 @@ func GetReqIdentityParam(event map[string]interface{}, params ...string) (map[st
 
 }
 
+// GetQueryParam function for extracting query parameters from request made to
+// lambda function, returns map and nil/error
 func GetQueryParam(event map[string]interface{}, params ...string) (map[string]interface{}, error) {
 	resp := make(map[string]interface{})
 
